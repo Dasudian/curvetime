@@ -3,7 +3,7 @@
 A Blockchain that organically orchestrates Proof of Work and AI model Training on one platform, optimizting the resource usage for intense computation.
 
 ## How it is implemented? And how it works?
-Please read the [A Blockchain model for AI computationl](https://www.dasudian.com/curvetime/paper/curvetime-paper.html) to understand its principle. 
+Please read the [A Blockchain model for AI computation](https://www.dasudian.com/curvetime/paper/curvetime-paper.html) to understand its principle. 
 
 ## Instructions to run
 
@@ -14,26 +14,26 @@ echo "deb https://apache.bintray.com/couchdb-deb focal main" | sudo tee -a /etc/
 sudo apt update
 sudo apt install couchdb
 ```
-Configure CouchDB
+2. Configure CouchDB
 ```
 sudo vi /opt/couchdb/etc/default.ini
 max_document_size = 80000000;
 ```
 
-2. Clone the project,
+3. Clone the project,
 
 ```sh
 $ git clone https://github.com/dasudian/curvetime
 ```
 
-3. Install the dependencies,
+4. Install the dependencies,
 
 ```sh
 $ cd curvetime
 $ pip install -r requirements.txt
 ```
 
-4. Start a blockchain node server
+5. Start a blockchain node server
 
 ```sh
 $ Python3 manage.py runserver 0.0.0.0:8000
