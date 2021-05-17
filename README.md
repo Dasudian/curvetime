@@ -89,3 +89,12 @@ Once you do all this, you can run the application, create transactions, and once
 ```sh
 $ curl -X GET http://localhost:8001/node/chain
 $ curl -X GET http://localhost:8002/node/chain
+
+
+## Todo
+- Merkel Tree
+- Node Discovery
+- Channels
+- Smart Contract Engine
+- Wallet
+- AI Models and Environments based on [Gym](https://gym.openai.com)

@@ -9,6 +9,9 @@ All kind of contributions are welcome. If the change you are suggesting is signi
 Lastly, thanks for considering to contribute to the project. 
 
 ## Todo
+- Merkel Tree
+- Node Discovery
+- Channels
+- Smart Contract Engine
 - Wallet
-- Node management
-- More AI problems and solutions
+- AI Models and Environments based on [Gym](https://gym.openai.com)
