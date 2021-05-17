@@ -139,7 +139,7 @@ class StockEnv(TradingEnv):
         elif action > 0:
             if self.trade:
                 action = "Frame: " + str(self.frame_count) + ", 买入: " + self.stocks[action-1] + ", 价格: " + str(self.prices[-1][action-1]) + "\n"
-            elif len(self.money) == 0:
+            elif len(self.money) == 0 and self.prices[-1][action-1] != 0:
                 action = "Frame: " + str(self.frame_count) + ", 准备买入: " + self.stocks[action-1] + ", 价格: " + str(self.prices[-1][action-1]) + " 但是没钱了!\n"
             elif self.prices[-1][action-1] == 0:
                 action = "Frame: " + str(self.frame_count) + ", 股票: " + self.stocks[action-1] + " 停牌\n"
