@@ -2,6 +2,7 @@ import numpy as np
 from .trading_env import TradingEnv
 from curvetime.db.models import Stocks
 import logging
+import pickle
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +13,8 @@ FEATURES_PER_STOCK = 30
 ACTIONS = range(-TOTAL_STOCKS, TOTAL_STOCKS+1)
 MONEY_SLOTS = 100
 SINGLE_CAPITAL = 10000
+POSITION_FILE = 'data/models/position.pkl'
+POSITION_HISTORY_FILE = 'data/models/position_history.pkl'
 
 
 
@@ -27,8 +30,19 @@ class StockEnv(TradingEnv):
         self.holding = []
         self.trade = False
 
-        self._position = [0] * TOTAL_STOCKS
-        self._position_history = [self._position] * self.window_size
+        try:
+            fileObj = open(POSITION_FILE, 'rb')
+            self._position = pickle.load(fileObj)
+            fileObj.close()
+        except Exception:
+            self._position = [0] * TOTAL_STOCKS
+        try:
+            fileObj = open(POSITION_HISTORY_FILE, 'rb')
+            self._position_history = pickle.load(fileObj)
+            fileObj.close()
+        except Exception:
+            self._position_history = [self._position] * self.window_size
+
         self._action_history = []
         self.state = self._get_observation()
 
@@ -136,7 +150,17 @@ class StockEnv(TradingEnv):
             del self._position_history[:1]
         self._action_history.append(action)
         self._position_history.append(self._position)
+        self._save_positions()
         return step_reward
+
+
+    def _save_positions(self):
+        fileObj = open(POSITION_FILE, 'wb')
+        pickle.dump(self._position, fileObj)
+        fileObj.close()
+        fileObj = open(POSITION_HISTORY_FILE, 'wb')
+        pickle.dump(self._position_history, fileObj)
+        fileObj.close()
 
 
 
