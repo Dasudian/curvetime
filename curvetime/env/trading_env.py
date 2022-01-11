@@ -27,6 +27,7 @@ class TradingEnv(gym.Env):
         self._done = False
         self._total_reward = 0
         self._total_profit = capital
+        self._total_gain = 0
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)

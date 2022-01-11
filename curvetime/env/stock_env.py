@@ -65,10 +65,11 @@ class StockEnv(TradingEnv):
     def _calculate_reward(self, action):
         step_reward = 0
         self.trade = False
+        gain_delta = self._update_profit()
 
         if action > 0:
             if len(self.money) == 0 or self._position[action-1] != 0 or self.prices[-1][action-1] == 0:
-                step_reward = 0
+                step_reward = gain_delta
             else:
                 self.trade = True
                 current_price = self.prices[-1][action-1]
@@ -80,7 +81,7 @@ class StockEnv(TradingEnv):
 
         if action < 0:
             if self._position[abs(action)-1] == 0 or self.prices[-1][abs(action)-1] == 0:
-                step_reward = 0
+                step_reward = gain_delta
             else:
                 self.trade = True
                 current_price = self.prices[-1][abs(action)-1]
@@ -93,6 +94,9 @@ class StockEnv(TradingEnv):
                         self.money.append(money)
                         self.holding.remove(trade)
                         break
+        if action == 0:
+            step_reward = gain_delta
+
 
         self._total_reward += step_reward
         return step_reward
@@ -104,6 +108,10 @@ class StockEnv(TradingEnv):
         for trade in self.holding:
             wealth = self.prices[-1][trade['action']] * trade['amount']
             self._total_profit += wealth
+        gain = (self._total_profit - MONEY_SLOTS*SINGLE_CAPITAL)/(MONEY_SLOTS*SINGLE_CAPITAL)
+        gain_delta = gain - self._total_gain
+        self._total_gain = gain
+        return gain_delta
 
 
     def _action_map(self, action):
