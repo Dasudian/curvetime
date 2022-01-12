@@ -1,4 +1,5 @@
 from .model import Model
+from tensorflow.keras.models import load_model
 from tensorflow.keras import layers
 from tensorflow import keras
 from curvetime.env.stock_env import WINDOW_SIZE, TOTAL_STOCKS, FEATURES_PER_STOCK

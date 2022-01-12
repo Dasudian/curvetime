@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class Agent:
-    def __init__(self, model, target_model, env, gamma=0.9, epsilon=1, epsilon_min=0.1, epsilon_degrade_rate=0.9999, batch_size=32, max_memory_length=100000, update_after_actions=4, update_target_network=1000):
+    def __init__(self, model, target_model, env, gamma=0.8, epsilon=1, epsilon_min=0.1, epsilon_degrade_rate=0.9999, batch_size=32, max_memory_length=100000, update_after_actions=4, update_target_network=1000):
         self.model = model
         self.target_model = target_model
         self.env = env
@@ -139,7 +139,7 @@ class Agent:
         if done:
             # Update running reward to check condition for solving
             self.episode_reward_history.append(episode_reward)
-            if len(self.episode_reward_history) > 100:
+            if len(self.episode_reward_history) > 10000:
                 del episode_reward_history[:1]
             self.running_reward = np.mean(self.episode_reward_history)
             logger.info("Episode: "+str(self.episode_count)+" finshed, with running reward: "+
