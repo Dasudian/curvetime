@@ -1,5 +1,5 @@
 requests
-Django
+Django==3.2.6
 djangorestframework
 django-cors-headers
 django-background-tasks
@@ -9,7 +9,7 @@ shortuuid
 django_redis
 uWSGI
 django-crontab
-tensorflow
+tensorflow==2.7.0
 h5py
 Keras
 pandas
@@ -17,3 +17,5 @@ numpy
 celery
 django-celery-results
 gym
+#https://github.com/tensorflow/docs
+IPython

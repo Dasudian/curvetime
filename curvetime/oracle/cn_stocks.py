@@ -82,7 +82,7 @@ def fetch_price(period=5):
         if hour == 12:
             time.sleep(10*60)
             continue
-        if hour == 13 and minute < 30:
+        if hour == 11 and minute > 30:
             time.sleep(10*60)
             continue
         codes = [batch_price(c[0], now, c[1]) for c in codes]
@@ -184,7 +184,7 @@ def rest_rule(period=2):
         if hour == 12:
             time.sleep(10*60)
             continue
-        if hour == 13 and minute < 30:
+        if hour == 11 and minute > 30:
             time.sleep(10*60)
             continue
         time.sleep(period*60)

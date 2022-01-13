@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 WINDOW_SIZE = 40
+SEQ_LENGTH = 100
 TOTAL_STOCKS = 3643
 FEATURES_PER_STOCK = 30
 ACTIONS = range(-TOTAL_STOCKS, TOTAL_STOCKS+1)
@@ -47,12 +48,22 @@ class StockEnv(TradingEnv):
         self.state = self._get_observation()
 
 
-    def _get_observation(self):
-        df = self.oracle.get_dataframe(self.frame_count)
-        if not df:
-            return None
-        observation = self._process_data(df)
-        return observation
+    def _get_observation(self, n=SEQ_LENGTH):
+        if n == 0:
+            df = self.oracle.get_dataframe(self.frame_count)
+            if not df:
+                return None
+            observation = self._process_data(df)
+            return observation
+        else:
+            series = []
+            for i in range(n):
+                df = self.oracle.get_dataframe((self.frame_count-1)*n + i + 1)
+                if not df:
+                    return None
+                observation = self._process_data(df)
+                series.append(observation)
+            return series
 
 
 
@@ -79,11 +90,10 @@ class StockEnv(TradingEnv):
     def _calculate_reward(self, action):
         step_reward = 0
         self.trade = False
-        gain_delta = self._update_profit()
 
         if action > 0:
             if len(self.money) == 0 or self._position[action-1] != 0 or self.prices[-1][action-1] == 0:
-                step_reward = gain_delta
+                action = 0
             else:
                 self.trade = True
                 current_price = self.prices[-1][action-1]
@@ -95,7 +105,7 @@ class StockEnv(TradingEnv):
 
         if action < 0:
             if self._position[abs(action)-1] == 0 or self.prices[-1][abs(action)-1] == 0:
-                step_reward = gain_delta
+                action = 0
             else:
                 self.trade = True
                 current_price = self.prices[-1][abs(action)-1]
@@ -108,6 +118,8 @@ class StockEnv(TradingEnv):
                         self.money.append(money)
                         self.holding.remove(trade)
                         break
+
+        gain_delta = self._update_profit()
         if action == 0:
             step_reward = gain_delta
 
@@ -136,7 +148,6 @@ class StockEnv(TradingEnv):
     def _update_state(self, action):
         action = self._action_map(action)
         step_reward = self._calculate_reward(action)
-        self._update_profit()
 
         if self.trade:
             if action > 0:
@@ -179,11 +190,11 @@ class StockEnv(TradingEnv):
                 action = "Frame: " + str(self.frame_count) + ", 股票: " + self.stocks[action-1] + ", 价格: " + str(self.prices[-1][action-1])+ " 已建仓\n"
         else:
             if self.trade:
-                action = "Frame: " + str(self.frame_count) + ", 卖出: " + self.stocks[abs(action)-1] + ", 价格: " + str(self.prices[-1][abs(action)-1]) +  " 上次买入价: " + str(self._position[abs(action)-1]) + "\n"
-            elif self._position[abs(action)-1] == 0:
-                action = "Frame: " + str(self.frame_count) + ", 股票: " + self.stocks[abs(action)-1] + ", 价格: " + str(self.prices[-1][abs(action)-1])+ " 未建仓\n"
-            else:
+                action = "Frame: " + str(self.frame_count) + ", 卖出: " + self.stocks[abs(action)-1] + ", 价格: " + str(self.prices[-1][abs(action)-1]) +  " 上次买入价: " + str(self._position_history[-2][abs(action)-1]) + "\n"
+            elif self.prices[-1][action-1] == 0:
                 action = "Frame: " + str(self.frame_count) + ", 股票: " + self.stocks[abs(action)-1] + " 停牌\n"
+            else:
+                action = "Frame: " + str(self.frame_count) + ", 股票: " + self.stocks[abs(action)-1] + ", 价格: " + str(self.prices[-1][abs(action)-1])+ " 未建仓\n"
 
         logger.info(
             action +

@@ -1,9 +1,9 @@
 # CurveTime Blockchain
 
-A Blockchain that organically orchestrates Proof of Work and AI model Training on one platform, optimizting the resource usage for intense computation.
+A Blockchain that organically orchestrates Proof-of-work and AI model Training on one platform, optimizting the resource usage for intense computation.
 
 ## How it is implemented? And how it works?
-Please read the [A Blockchain model for AI computation](https://www.dasudian.com/curvetime/paper/curvetime-paper.html) to understand its principle. 
+Please read the paper: [Blockchain Framework for AI computation](https://doi.org/10.21203/rs.3.rs-1000746/v1) to understand its principle. 
 
 ## Instructions to run
 
@@ -31,6 +31,7 @@ $ git clone https://github.com/dasudian/curvetime
 ```sh
 $ cd curvetime
 $ pip install -r requirements.txt
+$ pip install -q git+https://github.com/tensorflow/docs
 ```
 
 5. Start a blockchain node server

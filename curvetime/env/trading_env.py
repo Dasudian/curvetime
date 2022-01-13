@@ -47,12 +47,22 @@ class TradingEnv(gym.Env):
         step_reward = self._update_state(action)
         self.render(action)
         self.frame_count += 1
-        observation = self._get_observation()
+        observation = self._get_observation(0)
         info = (self._total_reward, self._total_profit)
         if observation is None:
             self._done = True
         return observation, step_reward, self._done, info
 
+    def step_series(self, action):
+        self._done = False
+        step_reward = self._update_state(action)
+        self.render(action)
+        self.frame_count += 1
+        observation = self._get_observation()
+        info = (self._total_reward, self._total_profit)
+        if observation is None:
+            self._done = True
+        return observation, step_reward, self._done, info
 
     def action_sample(self):
         return self.action_space.sample()
