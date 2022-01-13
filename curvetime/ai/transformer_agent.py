@@ -48,7 +48,6 @@ class Agent:
             action = self.env.action_sample()
         else:
             # Predict action Q-values from environment state
-            state = self.model.frames_to_features(state)
             state_tensor = tf.convert_to_tensor(state)
             state_tensor = tf.expand_dims(state_tensor, 0)
             action_probs = self.model.model(state_tensor, training=False)
@@ -107,7 +106,6 @@ class Agent:
 
             with tf.GradientTape() as tape:
                 # Train the model on the states and updated Q-values
-                state_sample = self.model.frames_to_features(state_sample)
                 q_values = self.model.model(state_sample)
 
                 # Apply the masks to the Q-values to get the Q-value for action taken

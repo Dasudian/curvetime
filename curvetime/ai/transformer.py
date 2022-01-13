@@ -44,20 +44,27 @@ class Transformer(Model):
         embed_dim = NUM_FEATURES
         classes = self.num_actions
 
-        inputs = keras.Input(shape=(None, None))
+        feature_extractor = FeatureExtractor(MAX_SEQ_LENGTH, NUM_FEATURES)
+        inputs = keras.Input(shape=(None, None))(feature_extractor)
         x = PositionalEmbedding(
         seq_length, embed_dim, name="frame_position_embedding")(inputs)
         x = TransformerEncoder(embed_dim, self.dense_dim, self.num_heads, name="transformer_layer")(x)
         x = layers.GlobalMaxPooling1D()(x)
         x = layers.Dropout(0.5)(x)
         outputs = layers.Dense(classes, activation="softmax")(x)
-        model = keras.Model(inputs, outputs)
+        model = keras.Model(feature_extractor, outputs)
 
         model.compile(
             optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"]
         )
         return model
 
+
+class FeatureExtractor(layers.Layer):
+    def __init__(self, seq_length, num_features, **kwargs):
+        super().__init__(**kwargs)
+        self.seq_length = seq_length
+        self.num_features = num_features
 
     def build_feature_extractor(self, shape):
         feature_extractor = keras.applications.NASNetLarge(
@@ -75,15 +82,15 @@ class Transformer(Model):
         return keras.Model(inputs, outputs, name="feature_extractor")
 
 
-    def frames_to_features(self, frames):
-        feature_extractor = self.build_feature_extractor(frames[0].shape)
+    def call(self, inputs):
+        feature_extractor = self.build_feature_extractor(inputs[0].shape)
         # Initialize placeholder to store the features of the current video.
         temp_frame_features = np.zeros(
-            shape=(1, MAX_SEQ_LENGTH, NUM_FEATURES), dtype="float32"
+            shape=(1, self.seq_length, self.num_features), dtype="float32"
         )
 
         # Extract features from the frames of the current video.
-        for i, batch in enumerate(frames):
+        for i, batch in enumerate(inputs):
             video_length = batch.shape[0]
             length = MAX_SEQ_LENGTH
             for j in range(length):

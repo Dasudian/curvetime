@@ -183,18 +183,18 @@ class StockEnv(TradingEnv):
             if self.trade:
                 action = "Frame: " + str(self.frame_count) + ", 买入: " + self.stocks[action-1] + ", 价格: " + str(self.prices[-1][action-1]) + "\n"
             elif len(self.money) == 0 and self.prices[-1][action-1] != 0:
-                action = "Frame: " + str(self.frame_count) + ", 准备买入: " + self.stocks[action-1] + ", 价格: " + str(self.prices[-1][action-1]) + " 但是没钱了!\n"
+                action = "Frame: " + str(self.frame_count) + ", 欲买入股票: " + self.stocks[action-1] + ", 价格: " + str(self.prices[-1][action-1]) + " 但是没钱了!\n"
             elif self.prices[-1][action-1] == 0:
-                action = "Frame: " + str(self.frame_count) + ", 股票: " + self.stocks[action-1] + " 停牌\n"
+                action = "Frame: " + str(self.frame_count) + ", 欲买入股票: " + self.stocks[action-1] + " 停牌\n"
             else:
-                action = "Frame: " + str(self.frame_count) + ", 股票: " + self.stocks[action-1] + ", 价格: " + str(self.prices[-1][action-1])+ " 已建仓\n"
+                action = "Frame: " + str(self.frame_count) + ", 欲买入股票: " + self.stocks[action-1] + ", 价格: " + str(self.prices[-1][action-1])+ " 已建仓\n"
         else:
             if self.trade:
                 action = "Frame: " + str(self.frame_count) + ", 卖出: " + self.stocks[abs(action)-1] + ", 价格: " + str(self.prices[-1][abs(action)-1]) +  " 上次买入价: " + str(self._position_history[-2][abs(action)-1]) + "\n"
             elif self.prices[-1][action-1] == 0:
-                action = "Frame: " + str(self.frame_count) + ", 股票: " + self.stocks[abs(action)-1] + " 停牌\n"
+                action = "Frame: " + str(self.frame_count) + ", 欲卖出股票: " + self.stocks[abs(action)-1] + " 停牌\n"
             else:
-                action = "Frame: " + str(self.frame_count) + ", 股票: " + self.stocks[abs(action)-1] + ", 价格: " + str(self.prices[-1][abs(action)-1])+ " 未建仓\n"
+                action = "Frame: " + str(self.frame_count) + ", 欲卖出股票: " + self.stocks[abs(action)-1] + ", 价格: " + str(self.prices[-1][abs(action)-1])+ " 未建仓\n"
 
         logger.info(
             action +
