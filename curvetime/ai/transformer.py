@@ -13,21 +13,31 @@ from curvetime.env.stock_env import WINDOW_SIZE, TOTAL_STOCKS, FEATURES_PER_STOC
 
 
 MODEL_PATH = 'data/models/model.h5'
-MAX_SEQ_LENGTH = 100   #same as the SEQ_LENGTH in stock_env
-NUM_FEATURES = 2048
 
 class Transformer(Model):
     """
     The model for stock price analysis
     """
-    def __init__(self, env, name='StockModel', filepath=MODEL_PATH, dense_dim=4, num_heads=8):
+    def __init__(self, env, name='StockModel', filepath=MODEL_PATH,
+            head_size=256,
+            num_heads=8,
+            ff_dim=4,
+            num_transformer_blocks=4,
+            mlp_units=[128],
+            mlp_dropout=0.4,
+            dropout=0.25):
         super().__init__(name, filepath)
-        self.input_shape = env.shape
+        self.input_shape = (env.shape[0], env.shape[1]*env.shape[2])
         self.num_actions = env.num_actions
         self.name = name
         self.filepath = filepath
-        self.dense_dim = dense_dim
+        self.head_size = head_size
         self.num_heads = num_heads
+        self.ff_dim = ff_dim
+        self.num_transformer_blocks = num_transformer_blocks
+        self.mlp_units = mlp_units
+        self.mlp_dropout = mlp_dropout
+        self.dropout = dropout
         self._create()
 
 
@@ -40,114 +50,62 @@ class Transformer(Model):
         self.model = model
 
     def _new_model(self):
-        seq_length = MAX_SEQ_LENGTH
-        embed_dim = NUM_FEATURES
-        classes = self.num_actions
-
-        feature_extractor = FeatureExtractor(MAX_SEQ_LENGTH, NUM_FEATURES)
-        inputs = keras.Input(shape=(None, None))(feature_extractor)
-        x = PositionalEmbedding(
-        seq_length, embed_dim, name="frame_position_embedding")(inputs)
-        x = TransformerEncoder(embed_dim, self.dense_dim, self.num_heads, name="transformer_layer")(x)
-        x = layers.GlobalMaxPooling1D()(x)
-        x = layers.Dropout(0.5)(x)
-        outputs = layers.Dense(classes, activation="softmax")(x)
-        model = keras.Model(feature_extractor, outputs)
+        model = build_model(
+                input_shape=self.input_shape,
+                head_size=self.head_size,
+                num_heads=self.num_heads,
+                ff_dim=self.ff_dim,
+                num_transformer_blocks=self.num_transformer_blocks,
+                mlp_units=self.mlp_units,
+                classes=self.num_actions,
+                mlp_dropout=self.mlp_dropout,
+                dropout=self.dropout)
 
         model.compile(
-            optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"]
-        )
+                loss="sparse_categorical_crossentropy",
+                optimizer=keras.optimizers.Adam(learning_rate=1e-4),
+                metrics=["sparse_categorical_accuracy"])
         return model
 
 
-class FeatureExtractor(layers.Layer):
-    def __init__(self, seq_length, num_features, **kwargs):
-        super().__init__(**kwargs)
-        self.seq_length = seq_length
-        self.num_features = num_features
-
-    def build_feature_extractor(self, shape):
-        feature_extractor = keras.applications.NASNetLarge(
-            weights=None,
-            include_top=False,
-            pooling="avg",
-            input_shape=shape,
-        )
-        preprocess_input = keras.applications.nasnet.preprocess_input
-
-        inputs = keras.Input(shape)
-        preprocessed = preprocess_input(inputs)
-
-        outputs = feature_extractor(preprocessed)
-        return keras.Model(inputs, outputs, name="feature_extractor")
 
 
-    def call(self, inputs):
-        feature_extractor = self.build_feature_extractor(inputs[0].shape)
-        # Initialize placeholder to store the features of the current video.
-        temp_frame_features = np.zeros(
-            shape=(1, self.seq_length, self.num_features), dtype="float32"
-        )
+def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
+    # Normalization and Attention
+    x = layers.LayerNormalization(epsilon=1e-6)(inputs)
+    x = layers.MultiHeadAttention(
+        key_dim=head_size, num_heads=num_heads, dropout=dropout
+    )(x, x)
+    x = layers.Dropout(dropout)(x)
+    res = x + inputs
 
-        # Extract features from the frames of the current video.
-        for i, batch in enumerate(inputs):
-            video_length = batch.shape[0]
-            length = MAX_SEQ_LENGTH
-            for j in range(length):
-                if np.mean(batch[j, :]) > 0.0:
-                    temp_frame_features[i, j, :] = feature_extractor.predict(
-                        batch[None, j, :]
-                    )
-
-                else:
-                    temp_frame_features[i, j, :] = 0.0
-        return temp_frame_features.squeeze()
+    # Feed Forward Part
+    x = layers.LayerNormalization(epsilon=1e-6)(res)
+    x = layers.Conv1D(filters=ff_dim, kernel_size=1, activation="relu")(x)
+    x = layers.Dropout(dropout)(x)
+    x = layers.Conv1D(filters=inputs.shape[-1], kernel_size=1)(x)
+    return x + res
 
 
-class PositionalEmbedding(layers.Layer):
-    def __init__(self, sequence_length, output_dim, **kwargs):
-        super().__init__(**kwargs)
-        self.position_embeddings = layers.Embedding(
-            input_dim=sequence_length, output_dim=output_dim
-        )
-        self.sequence_length = sequence_length
-        self.output_dim = output_dim
+def build_model(
+    input_shape,
+    head_size,
+    num_heads,
+    ff_dim,
+    num_transformer_blocks,
+    mlp_units,
+    classes,
+    dropout=0,
+    mlp_dropout=0,
+):
+    inputs = keras.Input(shape=input_shape)
+    x = inputs
+    for _ in range(num_transformer_blocks):
+        x = transformer_encoder(x, head_size, num_heads, ff_dim, dropout)
 
-    def call(self, inputs):
-        # The inputs are of shape: `(batch_size, frames, num_features)`
-        length = tf.shape(inputs)[1]
-        positions = tf.range(start=0, limit=length, delta=1)
-        embedded_positions = self.position_embeddings(positions)
-        return inputs + embedded_positions
-
-    def compute_mask(self, inputs, mask=None):
-        mask = tf.reduce_any(tf.cast(inputs, "bool"), axis=-1)
-        return mask
-
-
-class TransformerEncoder(layers.Layer):
-    def __init__(self, embed_dim, dense_dim, num_heads, **kwargs):
-        super().__init__(**kwargs)
-        self.embed_dim = embed_dim
-        self.dense_dim = dense_dim
-        self.num_heads = num_heads
-        self.attention = layers.MultiHeadAttention(
-            num_heads=num_heads, key_dim=embed_dim, dropout=0.3
-        )
-        self.dense_proj = keras.Sequential(
-            [layers.Dense(dense_dim, activation=tf.nn.gelu), layers.Dense(embed_dim),]
-        )
-        self.layernorm_1 = layers.LayerNormalization()
-        self.layernorm_2 = layers.LayerNormalization()
-
-    def call(self, inputs, mask=None):
-        if mask is not None:
-            mask = mask[:, tf.newaxis, :]
-
-        attention_output = self.attention(inputs, inputs, attention_mask=mask)
-        proj_input = self.layernorm_1(inputs + attention_output)
-        proj_output = self.dense_proj(proj_input)
-        return self.layernorm_2(proj_input + proj_output)
-
-
-
+    x = layers.GlobalAveragePooling1D(data_format="channels_first")(x)
+    for dim in mlp_units:
+        x = layers.Dense(dim, activation="relu")(x)
+        x = layers.Dropout(mlp_dropout)(x)
+    outputs = layers.Dense(classes, activation="softmax")(x)
+    return keras.Model(inputs, outputs)

@@ -8,7 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 WINDOW_SIZE = 40
-SEQ_LENGTH = 100
 TOTAL_STOCKS = 3643
 FEATURES_PER_STOCK = 30
 ACTIONS = range(-TOTAL_STOCKS, TOTAL_STOCKS+1)
@@ -48,23 +47,12 @@ class StockEnv(TradingEnv):
         self.state = self._get_observation()
 
 
-    def _get_observation(self, n=SEQ_LENGTH):
-        if n == 0:
-            df = self.oracle.get_dataframe(self.frame_count)
-            if not df:
-                return None
-            observation = self._process_data(df)
-            return observation
-        else:
-            series = []
-            for i in range(n):
-                df = self.oracle.get_dataframe((self.frame_count-1)*n + i + 1)
-                if not df:
-                    return None
-                observation = self._process_data(df)
-                series.append(observation)
-            return series
-
+    def _get_observation(self):
+        df = self.oracle.get_dataframe(self.frame_count)
+        if not df:
+            return None
+        observation = self._process_data(df)
+        return observation
 
 
     def _process_data(self, df):
