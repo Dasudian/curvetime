@@ -2,20 +2,18 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django_redis import get_redis_connection
 from curvetime.db.serializer import StockFeatureSerializer
 from curvetime.db.models import StockFeature, Stocks
-from curvetime.env.stock_env import WINDOW_SIZE
 import json
 
 
 
 class StockOracle:
-    def __init__(self, window_size=WINDOW_SIZE):
-        self.window_size = window_size
+    def __init__(self):
         self.stocks = Stocks.objects.all()
         self.stocks = sorted([s.code for s in self.stocks])
 
-    def get_dataframe(self, frame_count, type='train'):
+    def get_dataframe(self, frame_count, window_size, type='train'):
         if type == 'train':
-            return get_df(frame_count, self.window_size)
+            return get_df(frame_count, window_size)
         else:
             conn = get_redis_connection('default')
             return json.loads(conn.get('STOCK_FRAME'))

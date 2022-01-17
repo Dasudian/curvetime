@@ -7,7 +7,7 @@ import pickle
 logger = logging.getLogger(__name__)
 
 
-WINDOW_SIZE = 40
+WINDOW_SIZE = 48 * 5  #5-days data
 TOTAL_STOCKS = 3643
 FEATURES_PER_STOCK = 30
 ACTIONS = range(-TOTAL_STOCKS, TOTAL_STOCKS+1)
@@ -15,6 +15,8 @@ MONEY_SLOTS = 100
 SINGLE_CAPITAL = 10000
 POSITION_FILE = 'data/models/position.pkl'
 POSITION_HISTORY_FILE = 'data/models/position_history.pkl'
+MONEY_FILE = 'data/models/money.pkl'
+HOLDING_FILE = 'data/models/holding.pkl'
 
 
 
@@ -26,8 +28,6 @@ class StockEnv(TradingEnv):
         self.trade_fee_bid_percent = 0.003  # unit
         self.trade_fee_ask_percent = 0.003  # unit
         self.window_size = window_size
-        self.money = [SINGLE_CAPITAL] * MONEY_SLOTS
-        self.holding = []
         self.trade = False
 
         try:
@@ -42,13 +42,26 @@ class StockEnv(TradingEnv):
             fileObj.close()
         except Exception:
             self._position_history = [self._position] * self.window_size
+        try:
+            fileObj = open(MONEY_FILE, 'rb')
+            self.money = pickle.load(fileObj)
+            fileObj.close()
+        except Exception:
+            self.money = [SINGLE_CAPITAL] * MONEY_SLOTS
+        try:
+            fileObj = open(HOLDING_FILE, 'rb')
+            self.holding = pickle.load(fileObj)
+            fileObj.close()
+        except Exception:
+            self.holding = []
+
 
         self._action_history = []
         self.state = self._get_observation()
 
 
     def _get_observation(self):
-        df = self.oracle.get_dataframe(self.frame_count)
+        df = self.oracle.get_dataframe(self.frame_count, self.window_size)
         if not df:
             return None
         observation = self._process_data(df)
@@ -148,7 +161,8 @@ class StockEnv(TradingEnv):
         if len(self._position_history) >= self.window_size:
             del self._position_history[:1]
         self._action_history.append(action)
-        self._position_history.append(self._position)
+        new_position = self._position
+        self._position_history.append(new_position)
         self._save_positions()
         return step_reward
 
@@ -160,8 +174,12 @@ class StockEnv(TradingEnv):
         fileObj = open(POSITION_HISTORY_FILE, 'wb')
         pickle.dump(self._position_history, fileObj)
         fileObj.close()
-
-
+        fileObj = open(MONEY_FILE, 'wb')
+        pickle.dump(self.money, fileObj)
+        fileObj.close()
+        fileObj = open(HOLDING_FILE, 'wb')
+        pickle.dump(self.holding, fileObj)
+        fileObj.close()
 
     def render(self, action, mode='human'):
         action = self._action_map(action)
@@ -179,7 +197,7 @@ class StockEnv(TradingEnv):
         else:
             if self.trade:
                 action = "Frame: " + str(self.frame_count) + ", 卖出: " + self.stocks[abs(action)-1] + ", 价格: " + str(self.prices[-1][abs(action)-1]) +  " 上次买入价: " + str(self._position_history[-2][abs(action)-1]) + "\n"
-            elif self.prices[-1][action-1] == 0:
+            elif self.prices[-1][abs(action)-1] == 0:
                 action = "Frame: " + str(self.frame_count) + ", 欲卖出股票: " + self.stocks[abs(action)-1] + " 停牌\n"
             else:
                 action = "Frame: " + str(self.frame_count) + ", 欲卖出股票: " + self.stocks[abs(action)-1] + ", 价格: " + str(self.prices[-1][abs(action)-1])+ " 未建仓\n"

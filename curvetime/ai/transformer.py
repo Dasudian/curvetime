@@ -22,7 +22,7 @@ class Transformer(Model):
             head_size=256,
             num_heads=8,
             ff_dim=4,
-            num_transformer_blocks=4,
+            num_transformer_blocks=6,
             mlp_units=[128],
             mlp_dropout=0.4,
             dropout=0.25):
@@ -62,9 +62,9 @@ class Transformer(Model):
                 dropout=self.dropout)
 
         model.compile(
-                loss="sparse_categorical_crossentropy",
+                loss="categorical_crossentropy",
                 optimizer=keras.optimizers.Adam(learning_rate=1e-4),
-                metrics=["sparse_categorical_accuracy"])
+                metrics=["categorical_accuracy"])
         return model
 
 
