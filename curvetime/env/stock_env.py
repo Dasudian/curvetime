@@ -41,7 +41,7 @@ class StockEnv(TradingEnv):
             self._position_history = pickle.load(fileObj)
             fileObj.close()
         except Exception:
-            self._position_history = [self._position] * self.window_size
+            self._position_history = [[0]*TOTAL_STOCKS] * self.window_size
         try:
             fileObj = open(MONEY_FILE, 'rb')
             self.money = pickle.load(fileObj)
@@ -161,7 +161,7 @@ class StockEnv(TradingEnv):
         if len(self._position_history) >= self.window_size:
             del self._position_history[:1]
         self._action_history.append(action)
-        new_position = self._position
+        new_position = self._position.copy()
         self._position_history.append(new_position)
         self._save_positions()
         return step_reward
