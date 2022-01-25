@@ -31,7 +31,6 @@ $ git clone https://github.com/dasudian/curvetime
 ```sh
 $ cd curvetime
 $ pip install -r requirements.txt
-$ pip install -q git+https://github.com/tensorflow/docs
 ```
 
 5. Start a blockchain node server

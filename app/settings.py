@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 PG_DATABASE = os.environ.get("PG_DATABASE") or 'stockai'
 PG_USER = os.environ.get("PG_USER") or 'stockai'
 PG_PASSWORD = os.environ.get("PG_PASSWORD") or 'stockai'
-PG_HOST = os.environ.get("PG_HOST") or '172.30.100.251'
+PG_HOST = os.environ.get("PG_HOST") or '127.0.0.1'
 PG_PORT = os.environ.get("PG_PORT") or '5432'
 
 DATABASES = {
