@@ -1,5 +1,4 @@
 from .model import Model
-from tensorflow.keras.models import load_model
 from tensorflow.keras import layers
 from tensorflow import keras
 from curvetime.env.stock_env import WINDOW_SIZE, TOTAL_STOCKS, FEATURES_PER_STOCK
@@ -7,7 +6,7 @@ from curvetime.env.stock_env import WINDOW_SIZE, TOTAL_STOCKS, FEATURES_PER_STOC
 
 MODEL_PATH = 'data/models/model.h5'
 
-class StockModel(Model):
+class CNN(Model):
     """
     The model for stock price analysis
     """
@@ -18,15 +17,6 @@ class StockModel(Model):
         self.name = name
         self.filepath = filepath
         self._create()
-
-
-    def _create(self):
-        try:
-            model = load_model(self.filepath)
-        except Exception:
-            model = self._new_model()
-
-        self.model = model
 
     def _new_model(self):
         """

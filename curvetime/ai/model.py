@@ -10,7 +10,12 @@ class Model:
         self.filepath = filepath
 
     def _create(self):
-        raise NotImplementedError
+        try:
+            model = load_model(self.filepath)
+        except Exception:
+            model = self._new_model()
+
+        self.model = model
 
     def _new_model(self):
         raise NotImplementedError

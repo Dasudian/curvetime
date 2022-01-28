@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class Agent:
-    def __init__(self, model, target_model, env, gamma=0.8, epsilon=1, epsilon_min=0.1, epsilon_degrade_rate=0.99998, update_target_network=1000):
+    def __init__(self, model, target_model, env, gamma=0.8, epsilon=1, epsilon_min=0.1, epsilon_degrade_rate=0.9999, update_target_network=1000):
         self.model = model
         self.target_model = target_model
         self.env = env
@@ -29,8 +29,6 @@ class Agent:
             state = np.array(self.env.state)
         else:
             state = np.array(env_state)
-        state_shape = self.env.shape
-        state = np.reshape(state, (state_shape[0], state_shape[1]*state_shape[2]))
         done = False
         # env.render()
         # Use epsilon-greedy for exploration
@@ -44,7 +42,6 @@ class Agent:
             action_probs = self.model.model(state_tensor, training=False)
             # Take best action
             action = tf.argmax(action_probs[0]).numpy()
-            logger.info('Q value elected action:' + str(action))
 
         # Decay probability of taking random action
         self.epsilon *= self.epsilon_degrade_rate
@@ -57,15 +54,13 @@ class Agent:
         else:
             state_next = np.array(state_next)
 
-        self.env.state = state_next
         self.frame_count += 1
         self.episode_reward += reward
 
-        state_next = np.reshape(state_next, (state_shape[0], state_shape[1]*state_shape[2]))
         state_sample = np.array([state])
         state_next_sample = np.array([state_next])
         rewards_sample = [reward]
-        action_sample = [action]
+        action_sample = [ctions]
         done_sample = tf.convert_to_tensor([float(done)])
 
         # Build the updated Q-values for the sampled future states
@@ -81,8 +76,9 @@ class Agent:
 
         # Create a mask so we only calculate loss on the updated Q-values
         masks = tf.one_hot(action_sample, self.env.num_actions)
-        optimizer = keras.optimizers.Adam(learning_rate=1e-4, clipnorm=1.0)
-        loss_function = keras.losses.CategoricalCrossentropy()
+        optimizer = keras.optimizers.Adam(learning_rate=0.00025, clipnorm=1.0)
+        # Using huber loss for stability
+        loss_function = keras.losses.Huber()
         with tf.GradientTape() as tape:
             # Train the model on the states and updated Q-values
             q_values = self.model.model(state_sample)

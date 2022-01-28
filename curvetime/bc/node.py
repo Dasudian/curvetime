@@ -6,15 +6,15 @@ from curvetime.utils import ecode
 
 from curvetime.oracle.stocks import *
 from curvetime.env.stock_env import *
-from curvetime.ai.stock_model import *
-from curvetime.ai.agent import *
+from curvetime.ai.cnn import *
+from curvetime.ai.cnn_agent import *
 
 
 
 o = StockOracle()
 env = StockEnv(o)
-model = StockModel(env, filepath='data/models/model.h5')
-target_model = StockModel(env, filepath='data/models/target_model.h5')
+model = CNN(env, filepath='data/models/model.h5')
+target_model = CNN(env, filepath='data/models/target_model.h5')
 agent = Agent(model, target_model, env)
 blockchain = Blockchain(agent)
 # the address to other participating members of the network

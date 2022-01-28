@@ -1,7 +1,5 @@
 from tensorflow.keras import layers
 from tensorflow import keras
-from tensorflow.keras.models import load_model
-
 import tensorflow as tf
 import pandas as pd
 import numpy as np
@@ -39,14 +37,6 @@ class Transformer(Model):
         self.dropout = dropout
         self._create()
 
-
-    def _create(self):
-        try:
-            model = load_model(self.filepath)
-        except Exception:
-            model = self._new_model()
-
-        self.model = model
 
     def _new_model(self):
         model = build_model(
