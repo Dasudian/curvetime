@@ -62,3 +62,10 @@ class StockFeature(models.Model):
     class Meta:
         db_table = 'stockai_feature'
         ordering = ['time']
+
+class StockFeature2(models.Model):
+    time = models.CharField(max_length=40, null=True, unique=True)
+    frame = models.JSONField(null=True)
+    class Meta:
+        db_table = 'stockai_feature2'
+        ordering = ['time']

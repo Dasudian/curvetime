@@ -46,7 +46,7 @@ def get_latest_df():
         if hour == 12:
             time.sleep(10*60)
             continue
-        if hour == 13 and minute < 30:
+        if hour == 11 and minute > 30:
             time.sleep(10*60)
             continue
         conn = get_redis_connection('default')

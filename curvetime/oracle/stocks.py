@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django_redis import get_redis_connection
-from curvetime.db.serializer import StockFeatureSerializer
-from curvetime.db.models import StockFeature, Stocks
+from curvetime.db.serializer import StockFeatureSerializer, StockFeature2Serializer
+from curvetime.db.models import StockFeature, Stocks, StockFeature2
 import json
 
 
@@ -20,8 +20,11 @@ class StockOracle:
 
 
 
-def get_frame(row=10, page=1):
-    f = StockFeature.objects.all()
+def get_frame(row=10, page=1, type=None):
+    if type == 2:
+        f = StockFeature2.objects.all()
+    else:
+        f = StockFeature.objects.all()
     paginator = Paginator(f, row)
     try:
         p = paginator.page(page)
@@ -30,7 +33,10 @@ def get_frame(row=10, page=1):
     except EmptyPage:
         p = paginator.page(paginator.num_pages)
 
-    p = [StockFeatureSerializer(x).data['frame'] for x in p]
+    if type == 2:
+        p = [StockFeature2Serializer(x).data['frame'] for x in p]
+    else:
+        p = [StockFeatureSerializer(x).data['frame'] for x in p]
     return {'data': p, 'total': paginator.count}
 
 
@@ -48,3 +54,15 @@ def get_df(frame_count=1, window_size=10):
     start = (frame_count-1) % window_size
     end = (frame_count-1) % window_size + window_size
     return frame[start:end]
+
+
+def f_to_2():
+    f = StockFeature.objects.all()
+    for ff in f:
+        new_frame = []
+        frame = json.loads(ff.frame)
+        for r in frame:
+            row = [r[0], r[1], r[2], r[7]]
+            new_frame.append(row)
+        o = StockFeature2(time = ff.time, frame =json.dumps(new_frame))
+        o.save()

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from curvetime.db.models import StockFeature
+from curvetime.db.models import StockFeature, StockFeature2
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from collections import OrderedDict
@@ -13,6 +13,17 @@ class StockFeatureSerializer(serializers.ModelSerializer):
     frame = serializers.SerializerMethodField('get_frame')
     class Meta:
         model = StockFeature
+        fields = ['frame']
+
+    def get_frame(self, obj):
+        frame = obj.frame
+        return json.loads(frame)
+
+
+class StockFeature2Serializer(serializers.ModelSerializer):
+    frame = serializers.SerializerMethodField('get_frame')
+    class Meta:
+        model = StockFeature2
         fields = ['frame']
 
     def get_frame(self, obj):
