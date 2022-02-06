@@ -42,7 +42,7 @@ class Agent:
             action_probs = self.model.model(state_tensor, training=False)
             # Take best action
             action = tf.argmax(action_probs[0]).numpy()
-            logger.info('Q value elected action:' + str(action))
+            logger.info('Q value selected action:' + str(action))
 
         # Decay probability of taking random action
         self.epsilon *= self.epsilon_degrade_rate
@@ -79,7 +79,7 @@ class Agent:
         # Create a mask so we only calculate loss on the updated Q-values
         masks = tf.one_hot(action_sample, self.env.num_actions)
         optimizer = keras.optimizers.Adam(learning_rate=1e-4, clipnorm=1.0)
-        loss_function = keras.losses.BinaryCrossentropy()
+        loss_function = keras.losses.Crossentropy()
         with tf.GradientTape() as tape:
             # Train the model on the states and updated Q-values
             q_values = self.model.model(state_sample)

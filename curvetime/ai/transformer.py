@@ -22,7 +22,7 @@ class Transformer(Model):
             num_transformer_blocks=6,
             mlp_units=[128],
             mlp_dropout=0.4,
-            dropout=0.25):
+            dropout=0.4):
         super().__init__(name, filepath)
         self.input_shape = (env.shape[0], env.shape[1]*env.shape[2])
         self.num_actions = env.num_actions

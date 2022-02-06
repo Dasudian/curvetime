@@ -24,7 +24,7 @@ class NasNet(Model):
         self._create()
 
     def _new_model(self):
-        baseModel = keras.applications.NASNetLarge(weights="imagenet", include_top=False,
+        baseModel = keras.applications.NASNetLarge(weights=None, include_top=False,
 	input_tensor=layers.Input(shape=self.input_shape))
 
         # construct the head of the model that will be placed on top of the
@@ -38,7 +38,7 @@ class NasNet(Model):
         # place the head FC model on top of the base model (this will become
         # the actual model we will train)
         model = keras.models.Model(inputs=baseModel.input, outputs=headModel)
-        model.compile(loss="binary_crossentropy",
+        model.compile(loss="crossentropy",
                 optimizer=keras.optimizers.Adam(learning_rate=1e-4),
                 metrics=["accuracy"])
 

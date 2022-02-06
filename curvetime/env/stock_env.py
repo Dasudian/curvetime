@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 WINDOW_SIZE = 48 * 5  #5-days data
 TOTAL_STOCKS = 3643
-FEATURES_PER_STOCK = 30
+FEATURES_PER_STOCK = 5 #5: get_dataframe(f=2), 30: get_dataframe(f=None)
 ACTIONS = range(-TOTAL_STOCKS, TOTAL_STOCKS+1)
 MONEY_SLOTS = 100
 SINGLE_CAPITAL = 10000
@@ -61,7 +61,7 @@ class StockEnv(TradingEnv):
 
 
     def _get_observation(self):
-        df = self.oracle.get_dataframe(self.frame_count, self.window_size)
+        df = self.oracle.get_dataframe(self.frame_count, self.window_size, f=2)
         if not df:
             return None
         observation = self._process_data(df)

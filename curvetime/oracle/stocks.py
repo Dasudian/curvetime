@@ -11,17 +11,17 @@ class StockOracle:
         self.stocks = Stocks.objects.all()
         self.stocks = sorted([s.code for s in self.stocks])
 
-    def get_dataframe(self, frame_count, window_size, type='train'):
+    def get_dataframe(self, frame_count, window_size, type='train', f=None):
         if type == 'train':
-            return get_df(frame_count, window_size)
+            return get_df(frame_count, window_size, f)
         else:
             conn = get_redis_connection('default')
             return json.loads(conn.get('STOCK_FRAME'))
 
 
 
-def get_frame(row=10, page=1, type=None):
-    if type == 2:
+def get_frame(row=10, page=1, f=None):
+    if f == 2:
         f = StockFeature2.objects.all()
     else:
         f = StockFeature.objects.all()
@@ -33,21 +33,21 @@ def get_frame(row=10, page=1, type=None):
     except EmptyPage:
         p = paginator.page(paginator.num_pages)
 
-    if type == 2:
+    if f == 2:
         p = [StockFeature2Serializer(x).data['frame'] for x in p]
     else:
         p = [StockFeatureSerializer(x).data['frame'] for x in p]
     return {'data': p, 'total': paginator.count}
 
 
-def get_df(frame_count=1, window_size=10):
+def get_df(frame_count=1, window_size=10, f=None):
     total = get_frame()['total']
     if frame_count > total - window_size + 1:
         return None
     page1 = (frame_count-1) // window_size + 1
     page2 = page1 + 1
-    frame1 = get_frame(window_size, page1)
-    frame2 = get_frame(window_size, page2)
+    frame1 = get_frame(window_size, page1, f)
+    frame2 = get_frame(window_size, page2, f)
     frame1 = frame1['data']
     frame2 = frame2['data']
     frame = frame1 + frame2

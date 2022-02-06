@@ -44,7 +44,7 @@ class Agent:
             action_probs = self.model.model(state_tensor, training=False)
             # Take best action
             action = tf.argmax(action_probs[0]).numpy()
-            logger.info('Q value elected action:' + str(action))
+            logger.info('Q value selected action:' + str(action))
 
         # Decay probability of taking random action
         self.epsilon *= self.epsilon_degrade_rate
