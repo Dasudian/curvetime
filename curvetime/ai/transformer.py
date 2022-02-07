@@ -21,8 +21,8 @@ class Transformer(Model):
             ff_dim=4,
             num_transformer_blocks=6,
             mlp_units=[128],
-            mlp_dropout=0.4,
-            dropout=0.4):
+            mlp_dropout=0.25,
+            dropout=0.25):
         super().__init__(name, filepath)
         self.input_shape = (env.shape[0], env.shape[1]*env.shape[2])
         self.num_actions = env.num_actions
@@ -51,9 +51,9 @@ class Transformer(Model):
                 dropout=self.dropout)
 
         model.compile(
-                loss="categorical_crossentropy",
+                loss="huber_loss",
                 optimizer=keras.optimizers.Adam(learning_rate=1e-4),
-                metrics=["categorical_accuracy"])
+                metrics=['mean_squared_error', 'mean_absolute_error', 'mean_absolute_percentage_error', 'cosine_proximity'])
         return model
 
 
@@ -96,5 +96,5 @@ def build_model(
     for dim in mlp_units:
         x = layers.Dense(dim, activation="relu")(x)
         x = layers.Dropout(mlp_dropout)(x)
-    outputs = layers.Dense(classes, activation="softmax")(x)
+    outputs = layers.Dense(classes, activation="linear")(x)
     return keras.Model(inputs, outputs)

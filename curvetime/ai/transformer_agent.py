@@ -82,7 +82,7 @@ class Agent:
         # Create a mask so we only calculate loss on the updated Q-values
         masks = tf.one_hot(action_sample, self.env.num_actions)
         optimizer = keras.optimizers.Adam(learning_rate=1e-4, clipnorm=1.0)
-        loss_function = keras.losses.CategoricalCrossentropy()
+        loss_function = keras.losses.Huber()
         with tf.GradientTape() as tape:
             # Train the model on the states and updated Q-values
             q_values = self.model.model(state_sample)

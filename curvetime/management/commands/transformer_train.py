@@ -25,3 +25,16 @@ class Command(BaseCommand):
         except Exception as e:
             logger.error(e)
 
+
+def main():
+    o = StockOracle()
+    env = StockEnv(o)
+    model = Transformer(env, filepath='data/models/transformer.h5')
+    target_model = Transformer(env, filepath='data/models/target_transformer.h5')
+    agent = Agent(model, target_model, env)
+    while True:
+        agent.step()
+
+
+if __name__ == '__main__':
+    main()

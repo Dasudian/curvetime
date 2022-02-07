@@ -9,7 +9,7 @@ shortuuid
 django_redis
 uWSGI
 django-crontab
-tensorflow==2.7.0
+tensorflow
 h5py
 Keras
 pandas
