@@ -38,7 +38,7 @@ class NasNet(Model):
         # place the head FC model on top of the base model (this will become
         # the actual model we will train)
         model = keras.models.Model(inputs=baseModel.input, outputs=headModel)
-        model.compile(loss="crossentropy",
+        model.compile(loss="categorical_crossentropy",
                 optimizer=keras.optimizers.Adam(learning_rate=1e-4),
                 metrics=["accuracy"])
 
