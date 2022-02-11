@@ -119,7 +119,8 @@ def batch_price(code, time, old):
 
 def get_stock(code):
     try:
-        res = requests.get('http://hq.sinajs.cn/list=' + code)
+        header = {'Referer':'https://finance.sina.com.cn'}
+        res = requests.get('https://hq.sinajs.cn/list=' + code, headers=header)
         if res.status_code == 200:
             data = res.text.split(',')
             return data[1:30]
