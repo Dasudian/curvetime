@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class Agent:
-    def __init__(self, model, target_model, env, gamma=0.8, epsilon=1, epsilon_min=0.1, epsilon_degrade_rate=0.99998, update_target_network=1000):
+    def __init__(self, model, target_model, env, gamma=0.8, epsilon=1, epsilon_min=0.1, epsilon_degrade_rate=0.99999, update_target_network=1000):
         self.model = model
         self.target_model = target_model
         self.env = env

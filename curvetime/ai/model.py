@@ -12,6 +12,7 @@ class Model:
     def _create(self):
         try:
             model = load_model(self.filepath)
+            print('-----------load Ai models from backuped files!------------')
         except Exception:
             model = self._new_model()
 
