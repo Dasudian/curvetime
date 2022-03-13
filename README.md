@@ -1,39 +1,47 @@
 # CurveTime Blockchain
 
-A Blockchain that organically orchestrates Proof-of-work and AI model Training on one platform, optimizting the resource usage for intense computation.
+A Blockchain that organically orchestrates Proof-of-work and AI model Training on one platform, optimizing the resource usage for intense computation.
 
 ## How it is implemented? And how it works?
 Please read the paper: [Blockchain Framework for AI computation](https://doi.org/10.21203/rs.3.rs-1000746/v1) to understand its principle. 
 
 ## Instructions to run
-
-1. Install CouchDB
-```sh
-curl -L https://couchdb.apache.org/repo/bintray-pubkey.asc | sudo apt-key add -
-echo "deb https://apache.bintray.com/couchdb-deb focal main" | sudo tee -a /etc/apt/sources.list
-sudo apt update
-sudo apt install couchdb
+1. Install Prerequisites
 ```
-2. Configure CouchDB
+sudo apt install postgresql postgresql-server-dev-all redis-server python3-dev gcc
+```
+
+2. Install CouchDB
+```sh
+sudo apt update && sudo apt install -y curl apt-transport-https gnupg
+curl https://couchdb.apache.org/repo/keys.asc | gpg --dearmor | sudo tee /usr/share/keyrings/couchdb-archive-keyring.gpg >/dev/null 2>&1
+source /etc/os-release
+echo "deb [signed-by=/usr/share/keyrings/couchdb-archive-keyring.gpg] https://apache.jfrog.io/artifactory/couchdb-deb/ ${VERSION_CODENAME} main" \
+    | sudo tee /etc/apt/sources.list.d/couchdb.list >/dev/null
+sudo apt update
+sudo apt install -y couchdb
+```
+3. Configure CouchDB
 ```
 sudo vi /opt/couchdb/etc/default.ini
 max_document_size = 80000000;
+systemctl start couchdb.service
+systemctl enable couchdb.service
 ```
-
-3. Clone the project,
+4. Clone the project,
 
 ```sh
 $ git clone https://github.com/dasudian/curvetime
 ```
 
-4. Install the dependencies,
+5. Install the dependencies,
 
 ```sh
 $ cd curvetime
 $ pip install -r requirements.txt
 ```
 
-5. Start a blockchain node server
+6. Start a blockchain node server
 
 ```sh
 $ Python3 manage.py runserver 0.0.0.0:8000
