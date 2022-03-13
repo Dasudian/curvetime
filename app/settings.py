@@ -81,9 +81,9 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database for Oracle Data
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-PG_DATABASE = os.environ.get("PG_DATABASE") or 'stockai'
-PG_USER = os.environ.get("PG_USER") or 'stockai'
-PG_PASSWORD = os.environ.get("PG_PASSWORD") or 'stockai'
+PG_DATABASE = os.environ.get("PG_DATABASE") or 'curveime'
+PG_USER = os.environ.get("PG_USER") or 'curveime'
+PG_PASSWORD = os.environ.get("PG_PASSWORD") or 'curveime'
 PG_HOST = os.environ.get("PG_HOST") or '127.0.0.1'
 PG_PORT = os.environ.get("PG_PORT") or '5432'
 
@@ -220,7 +220,7 @@ LOGGING = {
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'data/download')
 
 # Redis
-REDIS_HOST = os.environ.get("REDIS_HOST") or "172.30.100.251"
+REDIS_HOST = os.environ.get("REDIS_HOST") or "127.0.0.1"
 REDIS_PORT = os.environ.get("REDIS_PORT") or "6379"
 REDIS_DATABASE = os.environ.get("REDIS_DATABASE") or "3"
 
@@ -240,7 +240,7 @@ CACHES = {
 STATIC_FILE_URL = os.environ.get("STATIC_FILE_URL") or 'http://127.0.0.1:8000/'
 IMAGE_PATH = STATIC_FILE_URL
 
-# 默认的系统配置
+# Default settings
 DEFAULT_SYS_SETTINGS = {
     'name': 'Curvetime',
     'icon': IMAGE_PATH + "img/default_icon.png",
