@@ -129,6 +129,16 @@ class StockEnv(TradingEnv):
         return step_reward
 
 
+    def risk_aversion_action(self, stop=0.05, limit=0.5):
+        for trade in self.holding:
+            action = trade['action']
+            buy_price = self._position[action-1]
+            current_price = self.prices[-1][action-1]
+            gain = (current_price - buy_price)/buy_price
+            if gain <= -stop or gain >= limit:
+                return TOTAL_STOCKS - action
+
+
 
     def _update_profit(self):
         self._total_profit = sum(self.money)

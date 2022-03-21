@@ -33,8 +33,11 @@ class Agent:
         # env.render()
         # Use epsilon-greedy for exploration
         if self.epsilon > np.random.rand(1)[0]:
-            # Take random action
-            action = self.env.action_sample()
+            if 0.5 > np.random.rand(1)[0]:
+                # Take random action
+                action = self.env.action_sample()
+            else:
+                action = self.env.risk_aversion_action()
         else:
             # Predict action Q-values from environment state
             state_tensor = tf.convert_to_tensor(state)
