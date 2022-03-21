@@ -131,18 +131,10 @@ class StockEnv(TradingEnv):
 
 
     def _update_profit(self):
-        old_profit = self._total_profit
-        flag = False
         self._total_profit = sum(self.money)
         for trade in self.holding:
-            if self.prices[-1][trade['action']] == 0:
-                flag = True
-                break
-            else:
-                wealth = self.prices[-1][trade['action']] * trade['amount']
-                self._total_profit += wealth
-        if flag:
-            self._total_profit = old_profit
+            wealth = self.prices[-1][trade['action']] * trade['amount']
+            self._total_profit += wealth
         gain = (self._total_profit - MONEY_SLOTS*SINGLE_CAPITAL)/(MONEY_SLOTS*SINGLE_CAPITAL)
         gain_delta = gain - self._total_gain
         self._total_gain = gain
