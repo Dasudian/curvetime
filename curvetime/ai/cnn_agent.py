@@ -63,7 +63,7 @@ class Agent:
         state_sample = np.array([state])
         state_next_sample = np.array([state_next])
         rewards_sample = [reward]
-        action_sample = [ctions]
+        action_sample = [action]
         done_sample = tf.convert_to_tensor([float(done)])
 
         # Build the updated Q-values for the sampled future states
