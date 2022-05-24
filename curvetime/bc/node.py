@@ -47,7 +47,8 @@ class Transaction(APIView):
         block = blockchain.fetch_block(hash)
         if not block:
             return util_response(code=ecode.NotFound)
-        data = json.dumps(block.__dict__, sort_keys=True)
+        #data = json.dumps(block.__dict__, sort_keys=True)
+        data = json.dumps(block)
         return util_response(data)
 
 
@@ -141,6 +142,8 @@ class Register(APIView):
         # Add the node to the peer list
         global blockchain
         global peers
+        self_peer = request.get_host()
+        peers.add(self_peer)
         peers.add(node_address)
         chain = blockchain.chain
 
@@ -185,7 +188,8 @@ class RegisterWith(APIView):
 def create_chain_from_dump(chain_dump, node_address):
     generated_blockchain = Blockchain(agent)
     generated_blockchain.chain = chain_dump
-    couch.delete()
+    #uncomment following line if deploying nodes on different machines
+    #couch.delete()
     couch.replicate_from(host_to_couchurl(node_address))
     return generated_blockchain
 

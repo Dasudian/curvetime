@@ -76,7 +76,10 @@ class Blockchain:
     @staticmethod
     def fetch_block(hash):
         block = couch.get(hash)
-        return Block(**block)
+        #if just return transactions
+        return Block(**block).transactions
+        #if return the whole block
+        #return Block(**block)
 
 
     @property

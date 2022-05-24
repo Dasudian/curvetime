@@ -137,9 +137,23 @@ To update the node with which the frontend application syncs (default is localho
 
 Once you do all this, you can run the application, create transactions, and once you mine the transactions, all the nodes in the network will update the chain. The chain of the nodes can also be inspected by inovking `/bc/chain` endpoint using cURL.
 
+
+9. Check the chain information
+
 ```sh
 $ curl -X GET http://localhost:8001/node/chain
 $ curl -X GET http://localhost:8002/node/chain
+```
+
+
+10. Create new data with transaction
+```
+$ curl -X POST -H"Content-Type:application/json" http://localhost:8001/api/transaction -d 'data_in_json_format'
+```
+
+11. Fetch a transaction
+```
+$ curl http://localhost:8002/api/transaction?hash=xxxxxxxxx
 ```
 
 ## Todo
