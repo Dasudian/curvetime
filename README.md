@@ -20,6 +20,8 @@ echo "deb [signed-by=/usr/share/keyrings/couchdb-archive-keyring.gpg] https://ap
     | sudo tee /etc/apt/sources.list.d/couchdb.list >/dev/null
 sudo apt update
 sudo apt install -y couchdb
+
+or refer to: https://docs.couchdb.org/en/latest/install/unix.html#installation-from-source to install CouchDB from source
 ```
 3. Configure CouchDB
 ```
@@ -41,7 +43,48 @@ $ cd curvetime
 $ pip install -r requirements.txt
 ```
 
-6. Start a blockchain node server
+6. Configure app/settings.py
+```
+...
+SECRET_KEY = 'give something here'
+JWT_SECRET_KEY = 'give something here'
+...
+#configure the proper DB connection for your Ai models feeding data if you use Postgresql
+PG_DATABASE = os.environ.get("PG_DATABASE") or ''
+PG_USER = os.environ.get("PG_USER") or ''
+PG_PASSWORD = os.environ.get("PG_PASSWORD") or ''
+PG_HOST = os.environ.get("PG_HOST") or '127.0.0.1'
+PG_PORT = os.environ.get("PG_PORT") or '5432'
+...
+
+# Configure your CouchDB connection here
+COUCH_SERVER_URL = 'http://admin:admin@localhost:5984/'
+COUCH_DATABASE = 'curvetime'
+
+
+# Configure your Blockchain Nodes
+CONNECTED_NODE_ADDRESS = ['http://localhost:8000']
+```
+
+7. (Optional) load the example data (for AI models crunching) to Postgresql
+```
+sudo su postgres
+psql
+>CREATE ROLE stockai with login password 'stockai';
+>CREATE DATABASE stockai with OWNER stockai;
+>\q
+exit
+sudo vi /etc/postgresql/12/main/pg_hba.conf, adding following line:
+"host stockai stockai 127.0.0.1/32 md5"
+sudo service postgresql restart
+psql -U stockai -h 127.0.0.1 < data/stockai/stockai_scheme.sql
+psql -U stockai -h 127.0.0.1
+>\COPY stockai_stocks FROM 'data/stockai/stockai_stocks.csv' DELIMITER ',' CSV HEADER;
+>\COPY stockai_feature2 FROM 'data/stockai/stockai_feature2.csv' DELIMITER ',' CSV HEADER;
+>\q
+```
+
+8. Start a blockchain node server
 
 ```sh
 $ Python3 manage.py runserver 0.0.0.0:8000
@@ -76,14 +119,14 @@ You can use the following cURL requests to register the nodes at port `8001` and
 
 ```sh
 curl -X POST \
-  http://127.0.0.1:8001/register_with \
+  http://127.0.0.1:8001/node/register_with \
   -H 'Content-Type: application/json' \
   -d '{"node_address": "http://127.0.0.1:8000"}'
 ```
 
 ```sh
 curl -X POST \
-  http://127.0.0.1:8002/register_with \
+  http://127.0.0.1:8002/node/register_with \
   -H 'Content-Type: application/json' \
   -d '{"node_address": "http://127.0.0.1:8000"}'
 ```
