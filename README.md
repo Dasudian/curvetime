@@ -77,10 +77,10 @@ exit
 sudo vi /etc/postgresql/12/main/pg_hba.conf, adding following line:
 "host stockai stockai 127.0.0.1/32 md5"
 sudo service postgresql restart
-psql -U stockai -h 127.0.0.1 < data/stockai/stockai_scheme.sql
+psql -U stockai -h 127.0.0.1 < data/examples/stockai/stockai_scheme.sql
 psql -U stockai -h 127.0.0.1
->\COPY stockai_stocks FROM 'data/stockai/stockai_stocks.csv' DELIMITER ',' CSV HEADER;
->\COPY stockai_feature2 FROM 'data/stockai/stockai_feature2.csv' DELIMITER ',' CSV HEADER;
+>\COPY stockai_stocks FROM 'data/examples/stockai/stockai_stocks.csv' DELIMITER ',' CSV HEADER;
+>\COPY stockai_feature2 FROM 'data/examples/stockai/stockai_feature2.csv' DELIMITER ',' CSV HEADER;
 >\q
 ```
 
