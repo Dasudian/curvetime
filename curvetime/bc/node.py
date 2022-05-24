@@ -8,6 +8,7 @@ from curvetime.oracle.stocks import *
 from curvetime.env.stock_env import *
 from curvetime.ai.cnn import *
 from curvetime.ai.cnn_agent import *
+from curvetime.db import couch
 
 
 
@@ -138,11 +139,14 @@ class Register(APIView):
             return util_response(code=ecode.ERROR)
 
         # Add the node to the peer list
+        global blockchain
+        global peers
         peers.add(node_address)
+        chain = blockchain.chain
 
         # Return the consensus blockchain to the newly registered node
         # so that he can sync
-        data = {'peers': peers}
+        data = {'peers': peers, 'chain': chain}
         return util_response(data)
 
 
@@ -157,7 +161,7 @@ class RegisterWith(APIView):
         if not node_address:
             return util_response(code=ecode.ERROR)
 
-        data = {"node_address": request.get_host}
+        data = {"node_address": request.get_host()}
         headers = {'Content-Type': "application/json"}
 
         # Make a request to register with remote node and obtain information
@@ -168,9 +172,10 @@ class RegisterWith(APIView):
             global blockchain
             global peers
             # update chain and the peers
-            chain_dump = response.json()['chain']
+            data = response.json()['data']
+            chain_dump = data['chain']
             blockchain = create_chain_from_dump(chain_dump, node_address)
-            peers.update(response.json()['peers'])
+            peers.update(data['peers'])
             return util_response()
         else:
             # if something goes wrong, pass it on to the API response
@@ -178,7 +183,7 @@ class RegisterWith(APIView):
 
 
 def create_chain_from_dump(chain_dump, node_address):
-    generated_blockchain = Blockchain()
+    generated_blockchain = Blockchain(agent)
     generated_blockchain.chain = chain_dump
     couch.delete()
     couch.replicate_from(host_to_couchurl(node_address))

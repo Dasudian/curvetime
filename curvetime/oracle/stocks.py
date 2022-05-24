@@ -41,7 +41,7 @@ def get_frame(row=10, page=1, f=None):
 
 
 def get_df(frame_count=1, window_size=10, f=None):
-    total = get_frame()['total']
+    total = get_frame(f=f)['total']
     if frame_count > total - window_size + 1:
         return None
     page1 = (frame_count-1) // window_size + 1
