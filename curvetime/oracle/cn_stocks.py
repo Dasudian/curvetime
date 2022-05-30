@@ -1,7 +1,7 @@
-from db.models import Stocks, StockPrice, StockFeature
+from curvetime.db.models import Stocks, StockPrice, StockFeature
+from curvetime.utils.utils import timestamp_to_utc, is_weekend
 import pandas as pd
 import requests, time, json
-from utils.utils import timestamp_to_utc, is_weekend
 from multiprocessing import Pool
 from django_redis import get_redis_connection
 from app.celery import app
