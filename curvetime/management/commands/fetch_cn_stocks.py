@@ -12,3 +12,10 @@ class Command(BaseCommand):
             fetch_price()
         except Exception as e:
             logger.error(e)
+
+if __name__ == '__main__':
+    main()
+
+def main():
+    print("----Start fetcing real-time data of Chinese Stock Market----")
+    fetch_price()

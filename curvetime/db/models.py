@@ -8,9 +8,10 @@ class Stocks(models.Model):
     name = models.CharField(max_length=40, null=True)   #股票名称
     pe = models.FloatField(null=True)   #市盈率
     capital = models.FloatField(null=True)  #市值
+    od = models.IntegerField(default=0)    #use for ordering
     class Meta:
         db_table = 'stockai_stocks'
-        ordering = ['code']
+        ordering = ['od']
 
 class User(models.Model):
     username = models.CharField(max_length=20, null=True)

@@ -1,7 +1,7 @@
 import numpy as np
 from .trading_env import TradingEnv
 from curvetime.db.models import Stocks
-import logging, smtplib
+import logging, smtplib, time
 import pickle
 
 logger = logging.getLogger(__name__)
@@ -217,20 +217,16 @@ class StockEnv(TradingEnv):
         msg = action + "Total Reward: {:.6f}".format(self._total_reward) + "      Total Profit: {:.6f}".format(self._total_profit)
         logger.info(msg)
         if self.trade:
-            send_mail(msg)
+            _n = 10
+            while _n > 0:
+                try:
+                    send_mail(msg)
+                    break
+                except Exception:
+                    _n -= 1
+                    time.sleep(10)
 
 
 
 def send_mail(msg):
-    sender = 'barco@curvetime.cn'
-    receivers = ['barco@curvetime.cn']
-    message = """Subject: CurveTime AI
-
-
-    {0}"""
-    message = message.format(msg).encode('utf-8')
-    mail = smtplib.SMTP_SSL('smtp.exmail.qq.com', 465)
-    #mail.ehlo()
-    #mail.starttls()
-    mail.login('o@curvetime.cn', 'xxxxxx')
-    mail.sendmail(sender, receivers, message)
+    # to implement

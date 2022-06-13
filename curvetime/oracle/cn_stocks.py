@@ -61,7 +61,7 @@ def get_latest_df():
 
 def fetch_price(period=5):
     codes = Stocks.objects.all()
-    codes = sorted([c.code for c in codes])
+    codes = [c.code for c in codes]
     codes = [(c, [0]*29) for c in codes]
     total = len(codes)
     conn = get_redis_connection('default')
