@@ -24,7 +24,7 @@ class StockEnv(TradingEnv):
     def __init__(self, oracle, capital=MONEY_SLOTS*SINGLE_CAPITAL, window_size=WINDOW_SIZE, num_stocks=TOTAL_STOCKS, features=FEATURES_PER_STOCK, num_actions=len(ACTIONS)):
         super().__init__((window_size, num_stocks, features), num_actions, capital, oracle)
         self.stocks = Stocks.objects.all()
-        self.stocks = sorted([s.code for s in self.stocks])
+        self.stocks = [s.code for s in self.stocks]
         self.trade_fee_bid_percent = 0.003  # unit
         self.trade_fee_ask_percent = 0.003  # unit
         self.window_size = window_size
@@ -145,7 +145,7 @@ class StockEnv(TradingEnv):
     def _update_profit(self):
         self._total_profit = sum(self.money)
         for trade in self.holding:
-            wealth = self.prices[-1][trade['action']] * trade['amount']
+            wealth = self.prices[-1][trade['action']-1] * trade['amount']
             self._total_profit += wealth
         gain = (self._total_profit - MONEY_SLOTS*SINGLE_CAPITAL)/(MONEY_SLOTS*SINGLE_CAPITAL)
         gain_delta = gain - self._total_gain
@@ -229,4 +229,5 @@ class StockEnv(TradingEnv):
 
 
 def send_mail(msg):
-    # to implement
+    #To implement
+

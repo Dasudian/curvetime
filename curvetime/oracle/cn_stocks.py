@@ -60,7 +60,7 @@ def get_latest_df():
 
 
 
-def fetch_price(period=4):
+def fetch_price(period=2):
     codes = Stocks.objects.all()
     codes = [c.code for c in codes]
     codes = [(c, [0]*29) for c in codes]

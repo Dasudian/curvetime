@@ -145,7 +145,7 @@ class StockEnv(TradingEnv):
     def _update_profit(self):
         self._total_profit = sum(self.money)
         for trade in self.holding:
-            wealth = self.prices[-1][trade['action']] * trade['amount']
+            wealth = self.prices[-1][trade['action']-1] * trade['amount']
             self._total_profit += wealth
         gain = (self._total_profit - MONEY_SLOTS*SINGLE_CAPITAL)/(MONEY_SLOTS*SINGLE_CAPITAL)
         gain_delta = gain - self._total_gain
