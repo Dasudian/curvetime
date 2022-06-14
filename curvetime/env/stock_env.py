@@ -24,7 +24,7 @@ class StockEnv(TradingEnv):
     def __init__(self, oracle, capital=MONEY_SLOTS*SINGLE_CAPITAL, window_size=WINDOW_SIZE, num_stocks=TOTAL_STOCKS, features=FEATURES_PER_STOCK, num_actions=len(ACTIONS)):
         super().__init__((window_size, num_stocks, features), num_actions, capital, oracle)
         self.stocks = Stocks.objects.all()
-        self.stocks = sorted([s.code for s in self.stocks])
+        self.stocks = [s.code for s in self.stocks]
         self.trade_fee_bid_percent = 0.003  # unit
         self.trade_fee_ask_percent = 0.003  # unit
         self.window_size = window_size

@@ -5,7 +5,8 @@ import requests, time, json
 from multiprocessing import Pool
 from django_redis import get_redis_connection
 from app.celery import app
-from curvetime.env.stock_env import WINDOW_SIZE
+#from curvetime.env.stock_env import WINDOW_SIZE
+WINDOW_SIZE = 40
 
 
 def parse_stocks(file='data/stocks.xlsx', header=None):
@@ -59,7 +60,7 @@ def get_latest_df():
 
 
 
-def fetch_price(period=5):
+def fetch_price(period=4):
     codes = Stocks.objects.all()
     codes = [c.code for c in codes]
     codes = [(c, [0]*29) for c in codes]
@@ -98,12 +99,10 @@ def fetch_price(period=5):
                 df = df[1:]
                 df.append(data)
             conn.set('STOCK_FRAME', json.dumps(df))
-        feature = Feature(time=now, frame=json.dumps(data))
+        feature = StockFeature(time=now, frame=json.dumps(data))
         feature.save()
-        #time.sleep(period*60)
+        time.sleep(period*60)
         print('-----one round-----')
-        break
-
 
 
 
