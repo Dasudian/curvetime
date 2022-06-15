@@ -102,7 +102,7 @@ class StockEnv(TradingEnv):
                 amount = (1-self.trade_fee_ask_percent)*self.spend/current_price
                 self.holding.append({'action': action,
                                      'amount': amount})
-                step_reward -= self.trade_fee_ask_percent / MONEY_SLOTS
+                step_reward -= (self.spend*self.trade_fee_ask_percent) / MONEY_SLOTS
 
         if action < 0:
             if self._position[abs(action)-1] == 0 or self.prices[-1][abs(action)-1] == 0:
@@ -115,7 +115,7 @@ class StockEnv(TradingEnv):
                 for trade in self.holding:
                     if trade['action'] == -action:
                         money = (1-self.trade_fee_bid_percent)*trade['amount']*current_price
-                        step_reward += (price_diff/last_trade_price - self.trade_fee_bid_percent) / MONEY_SLOTS
+                        step_reward += (money*price_diff/last_trade_price) / MONEY_SLOTS
                         self.money.append(money)
                         self.holding.remove(trade)
                         break
