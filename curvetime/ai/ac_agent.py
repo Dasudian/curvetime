@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class Agent:
-    def __init__(self, model, env, gamma=0.8, history_length=1000, backup_model=1000):
+    def __init__(self, model, env, gamma=0.8, history_length=10000, backup_model=1000):
         seed = 42
         self.model = model
         self.env = env
@@ -50,7 +50,12 @@ class Agent:
             self.action_probs_history.append(tf.math.log(action_probs[0, action]))
 
             # Apply the sampled action in our environment
-            state, reward, done, _ = self.env.step(action)
+            if action == 0:
+                logger.info("----------------Action: 0------------------")
+                execute_action = self.env.risk_aversion_action()
+                state, reward, done, _ = self.env.step(execute_action)
+            else:
+                state, reward, done, _ = self.env.step(action)
             self.rewards_history.append(reward)
             self.episode_reward += reward
             self.env.state = state

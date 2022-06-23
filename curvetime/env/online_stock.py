@@ -25,8 +25,8 @@ class StockEnv(TradingEnv):
         super().__init__((window_size, num_stocks, features), num_actions, capital, oracle)
         self.stocks = Stocks.objects.all()
         self.stocks = [s.code for s in self.stocks]
-        self.trade_fee_bid_percent = 0.003  # unit
-        self.trade_fee_ask_percent = 0.003  # unit
+        self.trade_fee_bid_percent = 0.0005  # unit
+        self.trade_fee_ask_percent = 0.0005  # unit
         self.window_size = window_size
         self.trade = False
 
