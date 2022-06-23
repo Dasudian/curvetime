@@ -4,7 +4,7 @@ import requests
 from curvetime.oracle.stocks import *
 from curvetime.env.stock_env import *
 from curvetime.ai.ac_transformer import *
-from curvetime.ai.ac_agent import *
+from curvetime.ai.ac_transformer_agent import *
 from curvetime.bc.blockchain import *
 
 

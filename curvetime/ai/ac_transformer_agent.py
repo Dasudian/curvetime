@@ -52,8 +52,8 @@ class Agent:
             # Apply the sampled action in our environment
             if action == 0:
                 logger.info("----------------Action: 0------------------")
-                execute_action = self.env.risk_aversion_action()
-                state, reward, done, _ = self.env.step(execute_action)
+                action = self.env.risk_aversion_action()
+                state, reward, done, _ = self.env.step(action)
             else:
                 state, reward, done, _ = self.env.step(action)
             self.rewards_history.append(reward)

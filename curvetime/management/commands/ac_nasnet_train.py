@@ -4,7 +4,7 @@ import requests
 from curvetime.oracle.stocks import *
 from curvetime.env.stock_env import *
 from curvetime.ai.ac_nasnet import *
-from curvetime.ai.ac_agent import *
+from curvetime.ai.ac_nasnet_agent import *
 from curvetime.bc.blockchain import *
 
 
@@ -17,7 +17,7 @@ class Command(BaseCommand):
         try:
             o = StockOracle()
             env = StockEnv(o)
-            model = Transformer(env, filepath='data/models/ac_nasnet.h5')
+            model = NasNet(env, filepath='data/models/ac_nasnet.h5')
             agent = Agent(model, env)
             while True:
                 agent.step()
@@ -28,7 +28,7 @@ class Command(BaseCommand):
 def main():
     o = StockOracle()
     env = StockEnv(o)
-    model = Transformer(env, filepath='data/models/ac_nasnet.h5')
+    model = NasNet(env, filepath='data/models/ac_nasnet.h5')
     agent = Agent(model, env)
     while True:
         a, r, f = agent.step()
