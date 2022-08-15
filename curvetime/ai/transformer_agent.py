@@ -113,7 +113,7 @@ class Agent:
             # Update running reward to check condition for solving
             self.episode_reward_history.append(self.episode_reward)
             if len(self.episode_reward_history) > 10000:
-                del episode_reward_history[:1]
+                del self.episode_reward_history[:1]
             self.running_reward = np.mean(self.episode_reward_history)
             logger.info("Episode: "+str(self.episode_count)+" finshed, with running reward: "+
                     str(self.running_reward))
