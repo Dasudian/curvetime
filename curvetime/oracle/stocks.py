@@ -17,7 +17,6 @@ class StockOracle:
             return get_df(frame_count, window_size, f)
         else:
             rest_rule(5)
-            pack_instant_data(window_size, f=f)
             conn = get_redis_connection('default')
             if f:
                 return json.loads(conn.get('STOCK_FRAME_' + str(f)))
@@ -73,44 +72,4 @@ def f_to_2():
         o = StockFeature2(time = ff.time, frame =json.dumps(new_frame))
         o.save()
 
-def pack_instant_data(window_size, f=2):
-    conn = get_redis_connection('default')
-    df = conn.get('STOCK_FRAME')
-    if not df:
-        df = StockFeature.objects.all().order_by('-time')[:window_size]
-        df = list(reversed(df))
-        df = [json.loads(dd.frame) for dd in df]
-        if not f:
-            conn.set('STOCK_FRAME', json.dumps(df))
-    else:
-        df = json.loads(df)
-        if not f:
-            latest = StockFeature.objects.last()
-            latest = json.loads(latest.frame)
-            df = df[1:]
-            df.append(latest[0])
-            conn.set('STOCK_FRAME', json.dumps(df))
-        else:
-            latest = df[-1]
-            df = conn.get('STOCK_FRAME_' + str(f))
-            if not df:
-                df = StockFeature.objects.all().order_by('-time')[:window_size]
-                df = list(reversed(df))
-                df = [json.loads(dd.frame) for dd in df]
-                new_df = []
-                for frame in df:
-                    new_frame = []
-                    for r in frame:
-                        row = [r[0], r[1], r[2], r[7]]
-                        new_frame.append(row)
-                    new_df.append(new_frame)
-                conn.set('STOCK_FRAME_'+str(f), json.dumps(new_df))
-            else:
-                df = json.loads(df)
-                new_frame = []
-                for r in latest:
-                    row = [r[0], r[1], r[2], r[7]]
-                    new_frame.append(row)
-                df = df[1:]
-                df.append(new_frame)
-                conn.set('STOCK_FRAME_'+str(f), json.dumps(df))
+

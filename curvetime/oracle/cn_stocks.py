@@ -7,6 +7,7 @@ from django_redis import get_redis_connection
 from app.celery import app
 #from curvetime.env.stock_env import WINDOW_SIZE
 WINDOW_SIZE = 40
+F2_WINDOW_SIZE = 48 * 5  #5-days data
 
 
 def parse_stocks(file='data/stocks.xlsx', header=None):
@@ -101,8 +102,9 @@ def fetch_price(period=2):
             conn.set('STOCK_FRAME', json.dumps(df))
         feature = StockFeature(time=now, frame=json.dumps(data))
         feature.save()
+        pack_instant_data(F2_WINDOW_SIZE)
         time.sleep(period*60)
-        print('-----one round-----')
+        print('-----one round for fetching stock prices-----')
 
 
 
@@ -190,3 +192,46 @@ def rest_rule(period=2):
         time.sleep(period*60)
         print('-----one round-----')
         break
+
+
+def pack_instant_data(window_size, f=2):
+    conn = get_redis_connection('default')
+    df = conn.get('STOCK_FRAME')
+    if not df:
+        df = StockFeature.objects.all().order_by('-time')[:window_size]
+        df = list(reversed(df))
+        df = [json.loads(dd.frame) for dd in df]
+        if not f:
+            conn.set('STOCK_FRAME', json.dumps(df))
+    else:
+        df = json.loads(df)
+        if not f:
+            latest = StockFeature.objects.last()
+            latest = json.loads(latest.frame)
+            df = df[1:]
+            df.append(latest[0])
+            conn.set('STOCK_FRAME', json.dumps(df))
+        else:
+            latest = df[-1]
+            df = conn.get('STOCK_FRAME_' + str(f))
+            if not df:
+                df = StockFeature.objects.all().order_by('-time')[:window_size]
+                df = list(reversed(df))
+                df = [json.loads(dd.frame) for dd in df]
+                new_df = []
+                for frame in df:
+                    new_frame = []
+                    for r in frame:
+                        row = [r[0], r[1], r[2], r[7]]
+                        new_frame.append(row)
+                    new_df.append(new_frame)
+                conn.set('STOCK_FRAME_'+str(f), json.dumps(new_df))
+            else:
+                df = json.loads(df)
+                new_frame = []
+                for r in latest:
+                    row = [r[0], r[1], r[2], r[7]]
+                    new_frame.append(row)
+                df = df[1:]
+                df.append(new_frame)
+                conn.set('STOCK_FRAME_'+str(f), json.dumps(df))
