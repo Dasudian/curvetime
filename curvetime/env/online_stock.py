@@ -129,7 +129,7 @@ class StockEnv(TradingEnv):
         return step_reward
 
 
-    def risk_aversion_action(self, stop=0.05, limit=0.5):
+    def risk_aversion_action(self, stop=0.05, limit=0.2):
         if self.holding:
             for trade in self.holding:
                 action = trade['action']
@@ -229,5 +229,15 @@ class StockEnv(TradingEnv):
 
 
 def send_mail(msg):
-    #To implement
+    sender = 'barco@curvetime.cn'
+    receivers = ['barco@curvetime.cn']
+    message = """Subject: 弯时2号精选 (CurveTime AI Premium 2)
 
+
+    {0}"""
+    message = message.format(msg).encode('utf-8')
+    mail = smtplib.SMTP_SSL('smtp.exmail.qq.com', 465)
+    #mail.ehlo()
+    #mail.starttls()
+    mail.login('barco@curvetime.cn', 'dF8#aL7n')
+    mail.sendmail(sender, receivers, message)

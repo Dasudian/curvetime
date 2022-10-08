@@ -129,7 +129,7 @@ class StockEnv(TradingEnv):
         return step_reward
 
 
-    def risk_aversion_action(self, stop=0.05, limit=0.5):
+    def risk_aversion_action(self, stop=0.05, limit=0.2):
         if self.holding:
             for trade in self.holding:
                 action = trade['action']
