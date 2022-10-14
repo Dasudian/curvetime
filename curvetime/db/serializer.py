@@ -31,6 +31,18 @@ class StockFeature2Serializer(serializers.ModelSerializer):
         return json.loads(frame)
 
 
+
+class DebtFeatureSerializer(serializers.ModelSerializer):
+    frame = serializers.SerializerMethodField('get_frame')
+    class Meta:
+        model = DebtFeature
+        fields = ['frame']
+
+    def get_frame(self, obj):
+        frame = obj.frame
+        return json.loads(frame)
+
+
 class Pagination(PageNumberPagination):
     page_size = WINDOW_SIZE
     page_size_query_param = 'row'

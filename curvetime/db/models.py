@@ -13,6 +13,15 @@ class Stocks(models.Model):
         db_table = 'stockai_stocks'
         ordering = ['od']
 
+
+class Debts(models.Model):
+    code = models.CharField(max_length=20, null=True)   #股票代码
+    name = models.CharField(max_length=40, null=True)   #股票名称
+    od = models.IntegerField(default=0)    #use for ordering
+    class Meta:
+        db_table = 'stockai_debts'
+        ordering = ['od']
+
 class User(models.Model):
     username = models.CharField(max_length=20, null=True)
     password = models.CharField(max_length=40, null=True)
@@ -69,4 +78,11 @@ class StockFeature2(models.Model):
     frame = models.JSONField(null=True)
     class Meta:
         db_table = 'stockai_feature2'
+        ordering = ['time']
+
+class DebtFeature(models.Model):
+    time = models.CharField(max_length=40, null=True, unique=True)
+    frame = models.JSONField(null=True)
+    class Meta:
+        db_table = 'stockai_debt_feature'
         ordering = ['time']
