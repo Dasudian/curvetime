@@ -10,18 +10,18 @@ import json, time
 class StockOracle:
     def __init__(self):
         self.stocks = Debts.objects.all()
-        self.stocks = sorted([s.code for s in self.stocks])
+        self.stocks = [s.code for s in self.stocks]
 
     def get_dataframe(self, frame_count, window_size, type='train', f=None):
         if type == 'train':
             return get_df(frame_count, window_size, f)
         else:
-            rest_rule(5)
+            rest_rule(3)
             conn = get_redis_connection('default')
             if f:
-                return json.loads(conn.get('STOCK_FRAME_' + str(f)))
+                return json.loads(conn.get('DEBT_FRAME_' + str(f)))
             else:
-                return json.loads(conn.get('STOCK_FRAME'))
+                return json.loads(conn.get('DEBT_FRAME'))
 
 
 

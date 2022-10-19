@@ -6,7 +6,7 @@ from multiprocessing import Pool
 from django_redis import get_redis_connection
 from app.celery import app
 #from curvetime.env.stock_env import WINDOW_SIZE
-WINDOW_SIZE = 48 * 5  #5-days data
+WINDOW_SIZE = 48 * 10  #10-days data
 
 
 def parse_stocks(file='data/stocks.xlsx', header=None):

@@ -10,7 +10,7 @@ import json, time
 class StockOracle:
     def __init__(self):
         self.stocks = Stocks.objects.all()
-        self.stocks = sorted([s.code for s in self.stocks])
+        self.stocks = [s.code for s in self.stocks]
 
     def get_dataframe(self, frame_count, window_size, type='train', f=None):
         if type == 'train':
