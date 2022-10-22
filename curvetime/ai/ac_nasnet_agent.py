@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class Agent:
-    def __init__(self, model, env, gamma=0.8, history_length=10000, backup_model=1000):
+    def __init__(self, model, env, gamma=0.8, history_length=10000, backup_model=100):
         seed = 42
         self.model = model
         self.env = env
