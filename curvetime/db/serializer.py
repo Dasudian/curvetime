@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from curvetime.db.models import StockFeature, StockFeature2
+from curvetime.db.models import StockFeature, StockFeature2, DebtFeature
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from collections import OrderedDict
