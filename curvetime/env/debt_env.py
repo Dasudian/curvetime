@@ -12,7 +12,7 @@ TOTAL_STOCKS = 436
 FEATURES_PER_STOCK = 30 #5: get_dataframe(f=2), 30: get_dataframe(f=None)
 ACTIONS = range(-TOTAL_STOCKS, TOTAL_STOCKS+1)
 MONEY_SLOTS = 50
-SINGLE_CAPITAL = 10000
+SINGLE_CAPITAL = 200000
 POSITION_FILE = 'data/models/debts_position.pkl'
 POSITION_HISTORY_FILE = 'data/models/debts_position_history.pkl'
 MONEY_FILE = 'data/models/debts_money.pkl'

@@ -225,19 +225,3 @@ class StockEnv(TradingEnv):
                 except Exception:
                     _n -= 1
                     time.sleep(10)
-
-
-
-def send_mail(msg):
-    sender = 'barco@curvetime.cn'
-    receivers = ['barco@curvetime.cn']
-    message = """Subject: 弯时2号精选 (CurveTime AI Premium 2)
-
-
-    {0}"""
-    message = message.format(msg).encode('utf-8')
-    mail = smtplib.SMTP_SSL('smtp.exmail.qq.com', 465)
-    #mail.ehlo()
-    #mail.starttls()
-    mail.login('barco@curvetime.cn', 'dF8#aL7n')
-    mail.sendmail(sender, receivers, message)

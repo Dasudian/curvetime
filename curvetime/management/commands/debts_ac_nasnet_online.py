@@ -1,8 +1,8 @@
 from django.core.management import BaseCommand
 import logging, time
 import requests
-from curvetime.oracle.debts *
-from curvetime.env.online_debt *
+from curvetime.oracle.debts import *
+from curvetime.env.online_debt import *
 from curvetime.ai.ac_nasnet import *
 from curvetime.ai.ac_nasnet_agent import *
 from curvetime.bc.blockchain import *
