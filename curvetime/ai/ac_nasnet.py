@@ -2,7 +2,6 @@ from tensorflow.keras import layers
 from tensorflow import keras
 
 from .model import Model
-from curvetime.env.stock_env import WINDOW_SIZE, TOTAL_STOCKS, FEATURES_PER_STOCK
 
 
 MODEL_PATH = 'data/models/ac_nasnet.h5'
