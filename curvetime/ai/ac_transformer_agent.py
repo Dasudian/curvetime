@@ -50,7 +50,7 @@ class Agent:
             self.action_probs_history.append(tf.math.log(action_probs[0, action]))
 
             # Apply the sampled action in our environment
-            if action == 0:
+            if action == self.env.shape[1]:
                 logger.info("----------------Action: 0------------------")
                 action = self.env.risk_aversion_action()
                 state, reward, done, _ = self.env.step(action)

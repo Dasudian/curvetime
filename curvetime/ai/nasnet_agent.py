@@ -36,6 +36,8 @@ class Agent:
             if 0.5 > np.random.rand(1)[0]:
                 # Take random action
                 action = self.env.action_sample()
+                if action ==  self.env.shape[1]:
+                    action = self.env.risk_aversion_action()
             else:
                 action = self.env.risk_aversion_action()
         else:
@@ -45,6 +47,9 @@ class Agent:
             action_probs = self.model.model(state_tensor, training=False)
             # Take best action
             action = tf.argmax(action_probs[0]).numpy()
+            if action ==  self.env.shape[1]:
+                action = self.env.risk_aversion_action()
+
             logger.info('Q value selected action:' + str(action))
 
         # Decay probability of taking random action
