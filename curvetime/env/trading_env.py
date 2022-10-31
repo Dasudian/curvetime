@@ -56,7 +56,10 @@ class TradingEnv(gym.Env):
 
 
     def action_sample(self):
-        return self.action_space.sample()
+        action = self.action_space.sample()
+        while action == self.shape[1]:
+            action = self.action_space.sample()
+        return action
 
 
     def render(self, action, mode='human'):
