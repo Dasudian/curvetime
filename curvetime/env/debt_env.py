@@ -93,16 +93,16 @@ class StockEnv(TradingEnv):
         self.trade = False
 
         if action > 0:
-            if len(self.money) == 0 or self._position[action-1] != 0 or self.prices[-1][action-1] == 0:
+            if len(self.money) == 0 or self._position[action-1] != 0 or self.prices[-1][action-1] < 100:
                 action = 0
             else:
                 self.trade = True
                 current_price = self.prices[-1][action-1]
-                spend = self.money.pop()
-                amount = (1-self.trade_fee_ask_percent)*spend/current_price
+                self.spend = self.money.pop()
+                amount = (1-self.trade_fee_ask_percent)*self.spend/current_price
                 self.holding.append({'action': action,
                                      'amount': amount})
-                step_reward -= (spend*self.trade_fee_ask_percent) / MONEY_SLOTS
+                step_reward -= (self.spend*self.trade_fee_ask_percent) / MONEY_SLOTS
 
         if action < 0:
             if self._position[abs(action)-1] == 0 or self.prices[-1][abs(action)-1] == 0:
@@ -127,6 +127,18 @@ class StockEnv(TradingEnv):
 
         self._total_reward += step_reward
         return step_reward
+
+
+    def pre_action(self, act):
+        action = self._action_map(act)
+        if action > 0:
+            if len(self.money) == 0 or self._position[action-1] != 0 or self.prices[-1][action-1] < 100:
+                return self.risk_aversion_action()
+        if action < 0:
+            if self._position[abs(action)-1] == 0 or self.prices[-1][abs(action)-1] == 0:
+                return self.risk_aversion_action()
+        return act
+
 
 
     def risk_aversion_action(self, stop=0.05, limit=0.2):

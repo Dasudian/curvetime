@@ -46,6 +46,7 @@ class Agent:
             # Sample action from action probability distribution
             action = np.random.choice(self.env.num_actions, p=np.squeeze(action_probs))
             self.action_probs_history.append(tf.math.log(action_probs[0, action]))
+            action = self.env.pre_action(action)
 
             # Apply the sampled action in our environment
             if action == self.env.shape[1]:

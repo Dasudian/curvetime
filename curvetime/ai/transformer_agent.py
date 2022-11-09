@@ -49,6 +49,7 @@ class Agent:
             action_probs = self.model.model(state_tensor, training=False)
             # Take best action
             action = tf.argmax(action_probs[0]).numpy()
+            action = self.env.pre_action(action)
             if action ==  self.env.shape[1]:
                 action = self.env.risk_aversion_action()
             logger.info('Q value selected action:' + str(action))
