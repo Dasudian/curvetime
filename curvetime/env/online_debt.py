@@ -133,10 +133,12 @@ class StockEnv(TradingEnv):
         action = self._action_map(act)
         if action > 0:
             if len(self.money) == 0 or self._position[action-1] != 0 or self.prices[-1][action-1] < 100:
-                return self.risk_aversion_action()
-        if action < 0:
+                act = self.risk_aversion_action()
+        elif action < 0:
             if self._position[abs(action)-1] == 0 or self.prices[-1][abs(action)-1] == 0:
-                return self.risk_aversion_action()
+                act = self.risk_aversion_action()
+        else:
+            act = self.risk_aversion_action()
         return act
 
 
