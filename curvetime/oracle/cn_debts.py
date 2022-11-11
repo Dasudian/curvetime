@@ -103,7 +103,7 @@ def fetch_price(period=2):
         feature.save()
         #pack_instant_data(F2_WINDOW_SIZE)
         time.sleep(period*60)
-        print('-----one round for fetching stock prices-----')
+        print('-----one round for fetching debts prices-----')
 
 
 

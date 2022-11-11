@@ -133,17 +133,17 @@ class StockEnv(TradingEnv):
         action = self._action_map(act)
         if action > 0:
             if len(self.money) == 0 or self._position[action-1] != 0 or self.prices[-1][action-1] == 0:
-                act = self.risk_aversion_action()
+                act = self.risk_aversion_action(act=act)
         elif action < 0:
             if self._position[abs(action)-1] == 0 or self.prices[-1][abs(action)-1] == 0:
-                act = self.risk_aversion_action()
+                act = self.risk_aversion_action(act=act)
         else:
-            act = self.risk_aversion_action()
+            act = self.risk_aversion_action(act=act)
         return act
 
 
 
-    def risk_aversion_action(self, stop=0.05, limit=0.2):
+    def risk_aversion_action(self, stop=0.05, limit=0.2, act=None):
         if self.holding:
             for trade in self.holding:
                 action = trade['action']
@@ -152,7 +152,10 @@ class StockEnv(TradingEnv):
                 gain = (current_price - buy_price)/buy_price
                 if gain <= -stop or gain >= limit:
                     return TOTAL_STOCKS - action
-        return self.action_sample()
+        if act:
+            return act
+        else:
+            return self.action_sample()
 
 
 
