@@ -18,6 +18,10 @@ POSITION_HISTORY_FILE = 'data/models/debts_position_history.pkl'
 MONEY_FILE = 'data/models/debts_money.pkl'
 HOLDING_FILE = 'data/models/debts_holding.pkl'
 
+import random
+LIMIT = (0.05, 0.5)
+STOP = (0.04, 0.1)
+
 
 
 class StockEnv(TradingEnv):
@@ -143,7 +147,9 @@ class StockEnv(TradingEnv):
 
 
 
-    def risk_aversion_action(self, stop=0.05, limit=0.2, act=None):
+    def risk_aversion_action(self, stop=STOP, limit=LIMIT, act=None):
+        limit = random.uniform(*limit)
+        stop = random.uniform(*stop)
         if self.holding:
             for trade in self.holding:
                 action = trade['action']
